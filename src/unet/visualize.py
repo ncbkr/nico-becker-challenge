@@ -44,10 +44,10 @@ def display(display_list):
 def show_prediction(model, images, targets):
     """assumes input batch"""
     pred_mask = model.predict(images)
-    display([images[0], targets[0], create_masks(pred_mask)[0]])
+    display([images[0], targets[0], pred_mask[0]])
 
 
 def export_prediction(model, images, targets, filename):
     """assumes input batch"""
     pred_mask = model.predict(images)
-    export([images[0], targets[0], create_masks(pred_mask)[0]], filename)
+    export([images[0], targets[0], pred_mask[0]], filename)
