@@ -77,5 +77,6 @@ def get_unet():
         tensorflow.keras.layers.concatenate([skip, x])
 
     x = tensorflow.keras.layers.Conv2DTranspose(2, 3, strides=2, padding='same')(x)
+    x = tensorflow.keras.layers.Softmax(axis=-1)(x)
 
     return tensorflow.keras.Model(inputs=inputs, outputs=x)

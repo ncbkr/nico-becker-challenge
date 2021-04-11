@@ -33,8 +33,8 @@ model = get_unet()
 
 # todo add metrics: accuracy, precision, recall, mean IoU.
 model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=["accuracy"]) 
+              loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
+              metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.Recall(), tf.keras.metrics.MeanIoU(num_classes=2)]) 
 
 TEST_LENGTH = 24
 TRAIN_LENGTH = 240 - TEST_LENGTH
