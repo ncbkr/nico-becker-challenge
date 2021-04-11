@@ -1,14 +1,40 @@
 from unet import get_unet
 from data import inputs_and_targets
+from visualize import export_prediction
 
 import tensorflow as tf
 
+import matplotlib.pyplot as plt
+
+from datetime import datetime
+from pathlib import Path
+
+training_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+model_dir = Path("data/models") / training_id
+model_dir.mkdir()
+
+sample_image = tf.io.read_file("data/sample_image.jpg")
+sample_image = tf.image.decode_jpeg(sample_image)
+sample_image = tf.image.resize(sample_image, (128, 128))
+
+sample_mask = tf.io.read_file("data/sample_mask.jpg")
+sample_mask = tf.image.decode_jpeg(sample_mask)
+sample_mask = tf.image.resize(sample_mask, (128, 128), method="nearest")
+sample_mask = tf.image.rgb_to_grayscale(sample_mask)
+
+
+class ExportCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        filename = str(model_dir / f"epoch_{epoch}.jpg")
+        export_prediction(self.model,  sample_image[tf.newaxis, ...], sample_mask[tf.newaxis, ...], filename)
+
 model = get_unet()
 
+
+# todo add metrics: accuracy, precision, recall, mean IoU.
 model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy'])
-
+              metrics=["accuracy"]) 
 
 TEST_LENGTH = 24
 TRAIN_LENGTH = 240 - TEST_LENGTH
@@ -29,12 +55,10 @@ test = test.batch(BATCH_SIZE)
 train = train.cache().batch(BATCH_SIZE)
 train = train.prefetch(buffer_size=tf.data.AUTOTUNE)
 
-print(train.element_spec)
-
 model_history = model.fit(train, epochs=EPOCHS,
                           steps_per_epoch=STEPS_PER_EPOCH,
                           validation_steps=VALIDATION_STEPS,
-                          validation_data=test)#,
-                          #callbacks=[DisplayCallback()])
+                          validation_data=test,
+                          callbacks=[ExportCallback()])
 
-tf.saved_model.save(model, "data/models/model")
+tf.saved_model.save(model, str(model_dir / "model"))
