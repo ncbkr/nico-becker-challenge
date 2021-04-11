@@ -65,7 +65,7 @@ def inputs_and_targets(data_filepath, image_height, image_width):
     mask_url_dataset, image_url_dataset = input_and_target_urls_from_csv(data_filepath)
 
     # TODO: Mask could also be two channels? tf.to_categorical
-    mask_dataset = mask_url_dataset.map(lambda x: tf_load_mask_with_2_channels(x, image_height, image_width))
+    mask_dataset = mask_url_dataset.map(lambda x: tf_load_mask(x, image_height, image_width))
     image_dataset = image_url_dataset.map(lambda x: tf_load_image(x, image_height, image_width))
 
     dataset = tf.data.Dataset.zip((image_dataset, mask_dataset))
