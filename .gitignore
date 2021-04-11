@@ -57,3 +57,6 @@ venv.bak/
 .idea
 .vscode
 .DS_Store
+
+# models
+data/models

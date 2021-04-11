@@ -74,8 +74,6 @@ def get_unet():
     # upsampling and skip connections
     for upsampling, skip in zip(upsampling_blocks, skip_connections):
         x = upsampling(x)
-        print("x: ", x.shape)
-        print("skip: ", skip.shape)
         tensorflow.keras.layers.concatenate([skip, x])
 
     x = tensorflow.keras.layers.Conv2DTranspose(2, 3, strides=2, padding='same')(x)
