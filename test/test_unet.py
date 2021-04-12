@@ -26,4 +26,4 @@ def test_unet_returns_result_in_input_shape(model):
     y = model(input_batch)
 
     assert tf.is_tensor(y)
-    assert y.shape.as_list() == [1, 128, 128, 2]
+    assert y.shape.as_list() == [1, 128, 128, 1]

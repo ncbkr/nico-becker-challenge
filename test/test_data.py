@@ -49,6 +49,7 @@ def test_input_and_target_images_are_loaded():
 
     image = tf.image.decode_jpeg(requests.get(image_url).content)
     image = tf.image.resize(image, (image_height, image_width))
+    image = tf.cast(image, tf.float32) / 255.0
 
     n_values = reduce(lambda a, b: a*b, mask.shape)
 

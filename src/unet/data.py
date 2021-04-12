@@ -18,6 +18,7 @@ def tf_load_image(tf_image_url, image_height, image_width):
     def load_image(image_url, image_height, image_widthe):
         img = tf.image.decode_jpeg(requests.get(image_url.numpy()).content)
         img = tf.image.resize(img, (image_height, image_width))
+        img = tf.cast(img, tf.float32) / 255.0
         return img
 
     img = tf.py_function(load_image, [tf_image_url, image_height, image_width], Tout=tf.float32)
