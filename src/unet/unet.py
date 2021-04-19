@@ -6,46 +6,50 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import UpSampling2D
 
-#https://www.tensorflow.org/guide/keras/functional
+# https://www.tensorflow.org/guide/keras/functional
 
 
 def get_encoder():
-    base = MobileNetV2(input_shape=[128, 128, 3], weights="imagenet", include_top=False, alpha=0.35)
+    base = MobileNetV2(
+        input_shape=[128, 128, 3], weights="imagenet", include_top=False, alpha=0.35
+    )
     base.trainable = False
 
     extraction_layers = [
-        'block_1_expand_relu',   # 64x64
-        'block_3_expand_relu',   # 32x32
-        'block_6_expand_relu',   # 16x16
-        'block_13_expand_relu',  # 8x8
-        'block_16_project',      # 4x4
+        "block_1_expand_relu",  # 64x64
+        "block_3_expand_relu",  # 32x32
+        "block_6_expand_relu",  # 16x16
+        "block_13_expand_relu",  # 8x8
+        "block_16_project",  # 4x4
     ]
     extracted_outputs = [base.get_layer(name).output for name in extraction_layers]
 
     # Create the feature extraction model
     return tensorflow.keras.Model(inputs=base.input, outputs=extracted_outputs)
-    
+
 
 def upsampling_block(filters, size):
-    initializer = tensorflow.random_normal_initializer(0., 0.02)
+    initializer = tensorflow.random_normal_initializer(0.0, 0.02)
 
-    decoder_block = tensorflow.keras.Sequential([
-        tensorflow.keras.layers.Conv2DTranspose(
-            filters,
-            size,
-            strides=2,
-            padding="same",
-            kernel_initializer=initializer,
-            use_bias=False
-        ),
-        tensorflow.keras.layers.BatchNormalization(),
-        tensorflow.keras.layers.ReLU()
-    ])
+    decoder_block = tensorflow.keras.Sequential(
+        [
+            tensorflow.keras.layers.Conv2DTranspose(
+                filters,
+                size,
+                strides=2,
+                padding="same",
+                kernel_initializer=initializer,
+                use_bias=False,
+            ),
+            tensorflow.keras.layers.BatchNormalization(),
+            tensorflow.keras.layers.ReLU(),
+        ]
+    )
 
-    return decoder_block 
+    return decoder_block
 
 
-def get_unet():    
+def get_unet():
     inputs = Input(shape=(128, 128, 3), name="input_image")
 
     encoder = get_encoder()
@@ -76,7 +80,7 @@ def get_unet():
         x = upsampling(x)
         tensorflow.keras.layers.concatenate([skip, x])
 
-    x = tensorflow.keras.layers.Conv2DTranspose(1, 3, strides=2, padding='same')(x)
+    x = tensorflow.keras.layers.Conv2DTranspose(1, 3, strides=2, padding="same")(x)
     x = tensorflow.keras.layers.Activation("sigmoid")(x)
 
     return tensorflow.keras.Model(inputs=inputs, outputs=x)

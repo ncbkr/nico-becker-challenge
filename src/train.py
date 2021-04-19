@@ -44,7 +44,12 @@ from unet.metrics import MeanIoU_Greater
 class ExportCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         filename = str(model_dir / f"epoch_{epoch}.jpg")
-        export_prediction(self.model,  sample_image[tf.newaxis, ...], sample_mask[tf.newaxis, ...], filename)
+        export_prediction(
+            self.model,
+            sample_image[tf.newaxis, ...],
+            sample_mask[tf.newaxis, ...],
+            filename,
+        )
 
 
 training_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -61,9 +66,16 @@ sample_mask = prepare_mask(sample_mask, 128, 128)
 
 model = get_unet()
 
-model.compile(optimizer='adam',
-              loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
-              metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.Recall(), MeanIoU_Greater(num_classes=2)]) 
+model.compile(
+    optimizer="adam",
+    loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+    metrics=[
+        "accuracy",
+        tf.keras.metrics.Precision(),
+        tf.keras.metrics.Recall(),
+        MeanIoU_Greater(num_classes=2),
+    ],
+)
 
 TEST_LENGTH = 24
 TRAIN_LENGTH = 240 - TEST_LENGTH
@@ -97,10 +109,16 @@ train = train.map(lambda image, mask: augment(image, mask))
 # prefetch training data
 train = train.prefetch(buffer_size=tf.data.AUTOTUNE)
 
-model_history = model.fit(train, epochs=EPOCHS,
-                          validation_data=test,
-                          callbacks=[
-                              ExportCallback(),
-                            tf.keras.callbacks.TensorBoard(log_dir=str(model_dir / "logs"), histogram_freq=1)])
+model_history = model.fit(
+    train,
+    epochs=EPOCHS,
+    validation_data=test,
+    callbacks=[
+        ExportCallback(),
+        tf.keras.callbacks.TensorBoard(
+            log_dir=str(model_dir / "logs"), histogram_freq=1
+        ),
+    ],
+)
 
 tf.saved_model.save(model, str(model_dir / "model"))
