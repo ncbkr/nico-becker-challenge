@@ -60,3 +60,6 @@ venv.bak/
 
 # models
 data/models
+
+# cached dataset
+data/cache
