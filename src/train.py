@@ -1,8 +1,8 @@
 """Train UNet for Building Footprints
 
 This script can be used for training a UNet model for creating building
-footprints from aerial imagery. The UNet is implemented in Tensorflow. 
-The dataset loading and preprocessing steps are implemented using the 
+footprints from aerial imagery. The UNet is implemented in Tensorflow.
+The dataset loading and preprocessing steps are implemented using the
 tf.data.Dataset API. The model architecture and the functions used for
 preprocessing, the custom metrics and functions for visualization are
 implemented in the unet module.
@@ -79,10 +79,10 @@ model.compile(
 
 TEST_LENGTH = 24
 TRAIN_LENGTH = 240 - TEST_LENGTH
-BATCH_SIZE = 1
+BATCH_SIZE = 4
 SHUFFLE_BUFFER = 250
-EPOCHS = 7
-TRAIN_REPEAT = 3
+EPOCHS = 5
+TRAIN_REPEAT = 10
 
 # first load csv dataset
 dataset = inputs_and_targets("data/data.csv", 128, 128)
@@ -94,7 +94,7 @@ test = tf.data.Dataset.take(dataset, 24)
 train = tf.data.Dataset.skip(dataset, 24)
 
 # repeat train
-train = train.repeat(3)
+train = train.repeat(TRAIN_REPEAT)
 
 # shuffle train again
 train = train.shuffle(SHUFFLE_BUFFER * TRAIN_REPEAT)
@@ -104,7 +104,7 @@ test = test.batch(BATCH_SIZE)
 train = train.batch(BATCH_SIZE)
 
 # apply augmentations to train
-train = train.map(lambda image, mask: augment(image, mask))
+# train = train.map(lambda image, mask: augment(image, mask))
 
 # prefetch training data
 train = train.prefetch(buffer_size=tf.data.AUTOTUNE)
