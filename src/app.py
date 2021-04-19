@@ -34,7 +34,7 @@ def inference():
 
     # preprocess image
     img_tensor = tf.convert_to_tensor(img_arr)
-    img_tensor = prepare_image(img_tensor)
+    img_tensor = prepare_image(img_tensor, 128, 128)
 
     # make prediction
     prediction = model(img_tensor[tf.newaxis, ...])
