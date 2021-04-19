@@ -1,9 +1,8 @@
-import tensorflow as tf
-import pandas as pd
-
-from PIL import Image
 import requests
 from io import BytesIO
+
+import tensorflow as tf
+import pandas as pd
 
 
 def prepare_image(image, image_height, image_width):
