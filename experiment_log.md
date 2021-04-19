@@ -88,7 +88,11 @@ conclusion:
 # runs
 
 **No normalization:** https://tensorboard.dev/experiment/twRhXkI5R8iljU2RQT1XUA/
+
 **augmentation, short training:** https://tensorboard.dev/experiment/NQxuYw5MSOaIXz0ZFbByKg/#scalars
+
 **augmentation, long training:** https://tensorboard.dev/experiment/bkzl2lGeS3OwVDAjCwAgoA/
+
 **No augmentation, repeat 3:** https://tensorboard.dev/experiment/vhzDeQQjTZCjgFZFv90MBQ/#scalars
+
 **Best run, no augmentation, repeat 10:** https://tensorboard.dev/experiment/AmtvatlpQYaJ6VoG6IPhnw/
