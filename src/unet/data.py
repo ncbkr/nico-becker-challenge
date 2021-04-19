@@ -72,3 +72,29 @@ def inputs_and_targets(data_filepath, image_height, image_width):
     dataset = tf.data.Dataset.zip((image_dataset, mask_dataset))
 
     return dataset
+
+
+@tf.function
+def augment(input_image, input_mask):
+    if tf.random.uniform(()) > 0.5:
+        input_image = tf.image.flip_left_right(input_image)
+        input_mask = tf.image.flip_left_right(input_mask)
+    
+    if tf.random.uniform(()) > 0.5:
+        input_image = tf.image.flip_up_down(input_image)
+        input_mask = tf.image.flip_up_down(input_mask)
+
+    if tf.random.uniform(()) > 0.5:
+        input_image = tf.image.random_brightness(
+            input_image, max_delta=0.5)
+
+    if tf.random.uniform(()) > 0.5:
+        input_image = tf.image.random_saturation(
+            input_image, 0.1, 0.8)
+    
+    if tf.random.uniform(()) > 0.5:
+        input_image = tf.image.random_contrast(
+            input_image, 0.1, 0.8)
+
+    input_image = tf.clip_by_value(input_image, 0, 1)
+    return input_image, input_mask
