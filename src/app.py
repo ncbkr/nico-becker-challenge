@@ -6,6 +6,7 @@ from unet.metrics import MeanIoU_Greater
 app = Flask(__name__)
 
 model = tf.keras.models.load_model(
+    # TODO: To use another model, please change this path
     "data/models/20210419_073252/model",
     custom_objects={"MeanIoU_Greater": MeanIoU_Greater},
 )
