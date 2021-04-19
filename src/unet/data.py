@@ -6,6 +6,23 @@ import requests
 from io import BytesIO
 
 
+def prepare_image(image, image_height, image_width):
+    image = tf.image.resize(image, (image_height, image_width))
+    image = tf.cast(image, tf.float32) / 255.0
+    return image
+
+
+def prepare_mask(mask, mask_height, mask_width):
+    mask = tf.where(mask == 255, 1, mask)
+    mask = tf.image.resize(mask, (mask_height, mask_width), method="nearest")
+    mask = tf.cast(mask, tf.float32) 
+
+    if mask.shape[-1] > 1:
+        mask = tf.image.rgb_to_grayscale(mask)
+
+    return mask
+
+
 def get_csv_dataset(data_filepath):
     df = pd.read_csv(data_filepath)
     dataset = tf.data.Dataset.from_tensor_slices(dict(df))
@@ -15,10 +32,9 @@ def get_csv_dataset(data_filepath):
 
 def tf_load_image(tf_image_url, image_height, image_width):
 
-    def load_image(image_url, image_height, image_widthe):
+    def load_image(image_url, image_height, image_width):
         img = tf.image.decode_jpeg(requests.get(image_url.numpy()).content)
-        img = tf.image.resize(img, (image_height, image_width))
-        img = tf.cast(img, tf.float32) / 255.0
+        img = prepare_image(img, image_height, image_width)
         return img
 
     img = tf.py_function(load_image, [tf_image_url, image_height, image_width], Tout=tf.float32)
@@ -30,9 +46,7 @@ def tf_load_mask(tf_image_url, image_height, image_width):
 
     def load_mask(image_url, image_height, image_width):
         mask = tf.image.decode_jpeg(requests.get(image_url.numpy()).content)
-        mask = tf.where(mask == 255, 1, mask)
-        mask = tf.image.resize(mask, (image_height, image_width), method="nearest")
-        mask = tf.cast(mask, tf.float32) 
+        mask = prepare_mask(mask, image_height, image_width)
         return mask
 
     mask = tf.py_function(load_mask, [tf_image_url, image_height, image_width], Tout=tf.float32)
