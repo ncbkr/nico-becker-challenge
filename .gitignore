@@ -63,3 +63,6 @@ data/models
 
 # cached dataset
 data/cache
+
+# tensorboard logs
+data/logs
