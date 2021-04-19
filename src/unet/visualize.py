@@ -12,7 +12,7 @@ def create_masks(pred_masks):
 
 
 def export(export_list, export_file):
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(15, 7))
 
     title = ['Input Image', 'True Mask', 'Predicted Mask']
 
