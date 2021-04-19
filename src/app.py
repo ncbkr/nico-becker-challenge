@@ -1,7 +1,22 @@
+"""This script runs a flask app for Building Footprint inference
+
+This inference application loads a Tensorflow model to make predictions
+on images received via the '/inference' endpoint.
+
+Before running this app, you might want to train a model first. You can
+do this with the train.py script. After you successfully trained a
+model, please set the path in the call to 'load_model' to point to your
+new model. If you used any custom metric during training, remember to
+provide those functions via the 'custom_objects'.
+"""
+
 import tensorflow as tf
 from flask import Flask, request
 import numpy as np
+
 from unet.metrics import MeanIoU_Greater
+from unet.data import prepare_image
+
 
 app = Flask(__name__)
 
@@ -17,15 +32,19 @@ def inference():
     data = request.json
     img_arr = np.array(data["image"], dtype=np.uint8)
 
+    # preprocess image
     img_tensor = tf.convert_to_tensor(img_arr)
-    img_tensor = tf.image.resize(img_tensor, (128, 128))
-    img_tensor = tf.cast(img_tensor, tf.float32) / 255.0
+    img_tensor = prepare_image(img_tensor)
 
+    # make prediction
     prediction = model(img_tensor[tf.newaxis, ...])
     prediction = prediction[0]
+
+    # create binary mask
     prediction = tf.greater(prediction, 0.5)
     prediction = tf.cast(prediction, tf.int8)
 
+    # resize prediction to the original shape
     prediction = tf.image.resize(prediction, img_arr.shape[:2], method="nearest")
     prediction = tf.squeeze(prediction)
 
