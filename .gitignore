@@ -59,7 +59,7 @@ venv.bak/
 .DS_Store
 
 # models
-data/models
+# data/models
 
 # cached dataset
 data/cache

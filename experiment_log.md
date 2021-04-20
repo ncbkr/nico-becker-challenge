@@ -95,4 +95,6 @@ conclusion:
 
 **No augmentation, repeat 3:** https://tensorboard.dev/experiment/vhzDeQQjTZCjgFZFv90MBQ/#scalars
 
-**Best run, no augmentation, repeat 10:** https://tensorboard.dev/experiment/AmtvatlpQYaJ6VoG6IPhnw/
+**augmentation, repeat 10:** https://tensorboard.dev/experiment/AmtvatlpQYaJ6VoG6IPhnw/
+
+**Best run, no augmentation, repeat 10:** https://tensorboard.dev/experiment/MEx7TNQoQ3OLSEJgjwPPrg/
